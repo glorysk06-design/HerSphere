@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav><div class="logo">HerSphere Admin</div><ul><li><a href="{{ url_for('admin_dashboard') }}">Dashboard</a></li><li><a href="{{ url_for('admin_logout') }}">Logout</a></li></ul></nav>
+    </header>
+    <main>
+        <section class="dashboard">
+            <div class="page-header-row"><h2>Admin Dashboard</h2><span>{{ session.admin_email }}</span></div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+            {% endwith %}
+            <div class="feature-grid admin-stats">
+                <div class="feature"><h3>{{ stats.users }}</h3><p>Total Users</p></div>
+                <div class="feature"><h3>{{ stats.employers }}</h3><p>Total Employers</p></div>
+                <div class="feature"><h3>{{ stats.pending_employers }}</h3><p>Pending Employers</p></div>
+                <div class="feature"><h3>{{ stats.jobs }}</h3><p>Total Jobs</p></div>
+                <div class="feature"><h3>{{ stats.applications }}</h3><p>Total Applications</p></div>
+            </div>
+
+            <section class="admin-section"><h3>Employers</h3>
+                <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Company</th><th>Email</th><th>Status</th><th>Action</th></tr></thead><tbody>
+                    {% for employer in employers %}<tr><td>{{ employer.company_name }}</td><td>{{ employer.email }}</td><td><span class="verification-badge verification-{{ employer.verification_status|lower }}">{{ employer.verification_status }}</span></td><td>{% if employer.verification_status != 'Verified' %}<form method="post" action="{{ url_for('admin_update_employer_verification', employer_id=employer.id) }}" class="inline-form"><input type="hidden" name="status" value="Verified"><button type="submit" class="btn-small">Verify</button></form>{% endif %}{% if employer.verification_status != 'Rejected' %}<form method="post" action="{{ url_for('admin_update_employer_verification', employer_id=employer.id) }}" class="inline-form"><input type="hidden" name="status" value="Rejected"><button type="submit" class="btn-small btn-secondary">Reject</button></form>{% endif %}</td></tr>
+                    {% else %}<tr><td colspan="4">No employers found.</td></tr>{% endfor %}
+                </tbody></table></div>
+            </section>
+
+            <section class="admin-section"><h3>Jobs</h3><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Title</th><th>Company</th><th>Skills</th><th>Risk</th><th>Employer</th></tr></thead><tbody>
+                {% for job in jobs %}<tr><td>{{ job.title }}</td><td>{{ job.company }}</td><td>{{ job.skill_required }}</td><td><span class="risk-badge risk-{{ job.risk_level|lower|replace(' ', '-') }}">{{ job.risk_level }}</span>{% if job.risk_indicators %}<br><small>{{ job.risk_indicators|join('; ') }}</small>{% endif %}</td><td>{% if job.verification_status == 'Verified' %}<span class="verification-badge verification-verified">Verified Employer</span>{% elif job.verification_status %}<span class="verification-badge verification-{{ job.verification_status|lower }}">{{ job.verification_status }}</span>{% else %}Legacy job{% endif %}</td></tr>{% else %}<tr><td colspan="5">No jobs found.</td></tr>{% endfor %}
+            </tbody></table></div></section>
+
+            <section class="admin-section"><h3>High-Risk Jobs</h3><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Title</th><th>Company</th><th>Risk Indicators</th></tr></thead><tbody>
+                {% for job in high_risk_jobs %}<tr><td>{{ job.title }}</td><td>{{ job.company }}</td><td>{{ job.risk_indicators|join('; ') }}</td></tr>{% else %}<tr><td colspan="3">No high-risk jobs found.</td></tr>{% endfor %}
+            </tbody></table></div></section>
+
+            <section class="admin-section"><h3>Applications</h3><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Applicant</th><th>Job</th><th>Company</th><th>Status</th></tr></thead><tbody>
+                {% for application in applications %}<tr><td>{{ application.user_name or 'Unavailable' }}<br><small>{{ application.user_email or '' }}</small></td><td>{{ application.job_title or 'Unavailable' }}</td><td>{{ application.company or 'Unavailable' }}</td><td>{{ application.status or 'Pending' }}</td></tr>{% else %}<tr><td colspan="4">No applications found.</td></tr>{% endfor %}
+            </tbody></table></div></section>
+
+            <section class="admin-section"><h3>Users</h3><div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Name</th><th>Email</th><th>Skills</th></tr></thead><tbody>
+                {% for user in users %}<tr><td>{{ user.name }}</td><td>{{ user.email }}</td><td>{{ user.skills or 'None listed' }}</td></tr>{% else %}<tr><td colspan="3">No users found.</td></tr>{% endfor %}
+            </tbody></table></div></section>
+        </section>
+    </main>
+</body>
+</html>

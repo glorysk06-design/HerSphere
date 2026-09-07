@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='2') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/my-applications">My Applications</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="dashboard">
+            <h2>Welcome, {{ user.name }}!</h2>
+            <p>Your skills: {{ user.skills }}</p>
+
+            <div class="dashboard-sections">
+                <div class="section">
+                    <h3>Recommended Jobs for You</h3>
+                    {% if recommended_jobs %}
+                        <div class="recommendation-list">
+                            {% for job in recommended_jobs %}
+                                <article class="recommendation-card">
+                                    <div class="recommendation-header">
+                                        <div>
+                                            <h4>{{ job.title }}</h4>
+                                            <p class="recommendation-company">{{ job.company }}</p>
+                                        </div>
+                                        <strong class="match-badge">{{ '%g'|format(job.match_percentage) }}% Match</strong>
+                                    </div>
+                                    <span class="risk-badge risk-{{ job.risk_level|lower|replace(' ', '-') }}">{{ job.risk_level }}</span>
+                                    {% if job.risk_level != 'Low Risk' %}<p class="risk-warning"><strong>Safety warning:</strong> {{ job.risk_indicators|join('; ') }}.</p>{% endif %}
+                                    <div class="recommendation-details">
+                                        <span><strong>Location:</strong> {{ job.location or 'Not specified' }}</span>
+                                        <span><strong>Job Type:</strong> {{ job.job_type or 'Not specified' }}</span>
+                                        <span><strong>Salary:</strong> {{ job.salary or 'Not specified' }}</span>
+                                    </div>
+                                    <p><strong>Matched skills:</strong> {{ job.matched_skills|join(', ') }}</p>
+                                    {% if job.missing_skills %}
+                                        <p><strong>Missing skills:</strong> {{ job.missing_skills|join(', ') }}</p>
+                                    {% else %}
+                                        <p class="all-skills-matched">All required skills matched</p>
+                                    {% endif %}
+                                    <a href="{{ url_for('jobs') }}" class="btn btn-small">View Job</a>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% elif not has_profile_skills %}
+                        <p class="empty-state">Add skills to your profile to receive explainable job recommendations.</p>
+                    {% else %}
+                        <p class="empty-state">No jobs match your profile skills yet. Browse all jobs to discover more opportunities.</p>
+                    {% endif %}
+                </div>
+                <div class="section quick-actions">
+                    <h3>Quick Actions</h3>
+                    <a href="/jobs" class="btn">Browse Jobs</a>
+                    <a href="/learning" class="btn">Learn Skills</a>
+                    <a href="/community" class="btn">Join Community</a>
+                    <a href="/freelance" class="btn">Freelance Tasks</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobs - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/my-applications">My Applications</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/saved-jobs">Saved Jobs</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="jobs">
+            <h2>{{ 'Saved Jobs' if saved_page else 'HerSphere Jobs' }}</h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% if not saved_page %}
+                <form method="get" action="/jobs" class="job-filters">
+                    <div class="search-field">
+                        <label for="keyword">Search jobs, skills, or company</label>
+                        <input type="search" id="keyword" name="keyword" value="{{ filters.keyword }}" placeholder="e.g. Python or Marketing">
+                    </div>
+                    <div>
+                        <label for="location">Location</label>
+                        <select id="location" name="location">
+                            <option value="">Any location</option>
+                            {% for value in locations %}<option value="{{ value }}" {% if filters.location|lower == value|lower %}selected{% endif %}>{{ value|title }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="job_type">Job Type</label>
+                        <select id="job_type" name="job_type">
+                            <option value="">Any type</option>
+                            {% for value in job_types %}<option value="{{ value }}" {% if filters.job_type|lower == value|lower %}selected{% endif %}>{{ value|title }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="salary">Salary</label>
+                        <select id="salary" name="salary">
+                            <option value="any" {% if filters.salary == 'any' %}selected{% endif %}>Any salary</option>
+                            <option value="below-20000" {% if filters.salary == 'below-20000' %}selected{% endif %}>Below 20,000</option>
+                            <option value="20000-40000" {% if filters.salary == '20000-40000' %}selected{% endif %}>20,000 - 40,000</option>
+                            <option value="40000-60000" {% if filters.salary == '40000-60000' %}selected{% endif %}>40,000 - 60,000</option>
+                            <option value="above-60000" {% if filters.salary == 'above-60000' %}selected{% endif %}>Above 60,000</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="sort">Sort</label>
+                        <select id="sort" name="sort">
+                            <option value="latest" {% if filters.sort == 'latest' %}selected{% endif %}>Latest</option>
+                            <option value="oldest" {% if filters.sort == 'oldest' %}selected{% endif %}>Oldest</option>
+                            <option value="salary-low" {% if filters.sort == 'salary-low' %}selected{% endif %}>Salary: Low to High</option>
+                            <option value="salary-high" {% if filters.sort == 'salary-high' %}selected{% endif %}>Salary: High to Low</option>
+                            <option value="title" {% if filters.sort == 'title' %}selected{% endif %}>Job Title: A-Z</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn">Apply Filters</button>
+                        <a href="/jobs" class="btn btn-secondary">Clear Filters</a>
+                    </div>
+                </form>
+            {% else %}
+                <p><a href="/jobs" class="btn-small">Browse all jobs</a></p>
+            {% endif %}
+            <div class="job-list">
+                {% for job in jobs %}
+                    <div class="job-card">
+                        <h3>{{ job.title }}</h3>
+                        <p><strong>Company:</strong> {{ job.company }}</p>
+                        {% if job.employer_verified %}<span class="verification-badge verification-verified">Verified Employer</span>{% endif %}
+                        <span class="risk-badge risk-{{ job.risk_level|lower|replace(' ', '-') }}">{{ job.risk_level }}</span>
+                        {% if job.risk_level != 'Low Risk' %}<p class="risk-warning"><strong>Safety warning:</strong> Review this job carefully before applying. {{ job.risk_indicators|join('; ') }}.</p>{% endif %}
+                        {% if job.location %}<p><strong>Location:</strong> {{ job.location }}</p>{% endif %}
+                        {% if job.job_type %}<p><strong>Job Type:</strong> {{ job.job_type }}</p>{% endif %}
+                        {% if job.salary %}<p><strong>Salary:</strong> {{ job.salary }}</p>{% endif %}
+                        <p><strong>Required Skill:</strong> {{ job.skill_required }}</p>
+                        {% if job.description %}
+                            <p>{{ job.description }}</p>
+                        {% endif %}
+                        {% if job.created_at %}<p class="posted-date"><strong>Posted:</strong> {{ job.created_at }}</p>{% endif %}
+
+                        <form method="post" action="/apply/{{ job.id }}" enctype="multipart/form-data"{% if job.risk_level != 'Low Risk' %} onsubmit="return confirm('This job has been flagged as {{ job.risk_level }}. Review the warning before applying. Continue?')"{% endif %}>
+                            <input type="hidden" name="voice_message" id="voice{{ job.id }}">
+                            <button type="button" onclick="showVoiceRecorder({{ job.id }})" class="btn-small">Speak Application</button>
+                            <button type="submit" class="btn">Apply</button>
+                            <div id="recorder{{ job.id }}" class="voice-recorder" hidden>
+                                <p>Record a short voice application</p>
+                                <button type="button" id="start{{ job.id }}" onclick="startRecording({{ job.id }})" class="btn-small">Start Recording</button>
+                                <button type="button" id="stop{{ job.id }}" onclick="stopRecording({{ job.id }})" class="btn-small btn-secondary" disabled>Stop Recording</button>
+                                <audio id="audio{{ job.id }}" controls hidden></audio>
+                                <input type="file" id="file{{ job.id }}" name="voice_audio" accept="audio/webm,audio/ogg,audio/mp4,audio/wav,audio/mpeg" hidden>
+                                <button type="submit" id="submitVoice{{ job.id }}" class="btn-small" disabled>Submit Voice Application</button>
+                                <button type="button" onclick="cancelRecording({{ job.id }})" class="btn-small btn-secondary">Cancel</button>
+                            </div>
+                        </form>
+                        {% if job.id in saved_job_ids %}
+                            <form method="post" action="/unsave-job/{{ job.id }}" class="bookmark-form"><button type="submit" class="btn-small btn-secondary">Remove Saved</button></form>
+                        {% else %}
+                            <form method="post" action="/save-job/{{ job.id }}" class="bookmark-form"><button type="submit" class="btn-small">Save Job</button></form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                {% if not jobs %}<p class="empty-state">No jobs match these filters.</p>{% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+
+    <script>
+        const recorders = {};
+
+        function showVoiceRecorder(id) {
+            const recorder = document.getElementById('recorder' + id);
+            recorder.hidden = false;
+            if (!navigator.mediaDevices || !window.MediaRecorder) {
+                recorder.querySelector('p').textContent = 'Voice recording is not supported in this browser.';
+                recorder.querySelector('#start' + id).disabled = true;
+            }
+        }
+
+        async function startRecording(id) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+                mediaRecorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
+                mediaRecorder.onstop = () => {
+                    stream.getTracks().forEach(track => track.stop());
+                    const blob = new Blob(chunks, { type: 'audio/webm' });
+                    const audio = document.getElementById('audio' + id);
+                    audio.src = URL.createObjectURL(blob);
+                    audio.hidden = false;
+                    const file = new File([blob], 'voice-application.webm', { type: 'audio/webm' });
+                    const transfer = new DataTransfer();
+                    transfer.items.add(file);
+                    document.getElementById('file' + id).files = transfer.files;
+                    document.getElementById('submitVoice' + id).disabled = false;
+                };
+                recorders[id] = mediaRecorder;
+                mediaRecorder.start();
+                document.getElementById('start' + id).disabled = true;
+                document.getElementById('stop' + id).disabled = false;
+            } catch (error) {
+                alert('Microphone permission is required to record a voice application.');
+            }
+        }
+
+        function stopRecording(id) {
+            if (recorders[id] && recorders[id].state !== 'inactive') recorders[id].stop();
+            document.getElementById('stop' + id).disabled = true;
+        }
+
+        function cancelRecording(id) {
+            if (recorders[id] && recorders[id].state !== 'inactive') recorders[id].stop();
+            const recorder = document.getElementById('recorder' + id);
+            recorder.hidden = true;
+            document.getElementById('audio' + id).hidden = true;
+            document.getElementById('audio' + id).removeAttribute('src');
+            document.getElementById('file' + id).value = '';
+            document.getElementById('submitVoice' + id).disabled = true;
+            document.getElementById('start' + id).disabled = false;
+            document.getElementById('stop' + id).disabled = true;
+        }
+    </script>
+</body>
+</html>

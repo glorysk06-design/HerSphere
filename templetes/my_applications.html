@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/my-applications">My Applications</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/saved-jobs">Saved Jobs</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="applications-page">
+            <h2>My Applications</h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <div class="applications-summary">
+                <div class="summary-card">
+                    <span>Total Applications</span>
+                    <strong>{{ total_count }}</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Applied</span>
+                    <strong>{{ status_counts.get('Applied', 0) }}</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Under Review</span>
+                    <strong>{{ status_counts.get('Under Review', 0) }}</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Shortlisted</span>
+                    <strong>{{ status_counts.get('Shortlisted', 0) }}</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Interview</span>
+                    <strong>{{ status_counts.get('Interview', 0) }}</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Selected</span>
+                    <strong>{{ status_counts.get('Selected', 0) }}</strong>
+                </div>
+                <div class="summary-card">
+                    <span>Rejected</span>
+                    <strong>{{ status_counts.get('Rejected', 0) }}</strong>
+                </div>
+            </div>
+
+            <form method="get" action="{{ url_for('my_applications') }}" class="application-toolbar">
+                <div>
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All</option>
+                        <option value="Applied" {% if status_filter == 'Applied' %}selected{% endif %}>Applied</option>
+                        <option value="Under Review" {% if status_filter == 'Under Review' %}selected{% endif %}>Under Review</option>
+                        <option value="Shortlisted" {% if status_filter == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                        <option value="Interview" {% if status_filter == 'Interview' %}selected{% endif %}>Interview</option>
+                        <option value="Selected" {% if status_filter == 'Selected' %}selected{% endif %}>Selected</option>
+                        <option value="Rejected" {% if status_filter == 'Rejected' %}selected{% endif %}>Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="sort">Sort</label>
+                    <select id="sort" name="sort">
+                        <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                        <option value="title" {% if sort == 'title' %}selected{% endif %}>Job Title A–Z</option>
+                    </select>
+                </div>
+                <div class="toolbar-actions">
+                    <button type="submit" class="btn">Apply</button>
+                    <a href="{{ url_for('my_applications') }}" class="btn btn-secondary">Clear Filter</a>
+                </div>
+            </form>
+
+            {% if applications %}
+                <div class="application-list-stack">
+                    {% for application in applications %}
+                        <article class="application-card">
+                            <div class="application-card-header">
+                                <div>
+                                    <h3>{{ application.title }}</h3>
+                                    <p class="company-line"><strong>Company:</strong> {{ application.company }}</p>
+                                </div>
+                                <span class="status-badge {{ application.status_badge_class }}">{{ application.status_label }}</span>
+                            </div>
+
+                            <div class="application-meta-row">
+                                {% if application.location %}<p><strong>Location:</strong> {{ application.location }}</p>{% endif %}
+                                {% if application.job_type %}<p><strong>Job Type:</strong> {{ application.job_type }}</p>{% endif %}
+                                {% if application.salary %}<p><strong>Salary:</strong> {{ application.salary }}</p>{% endif %}
+                                {% if application.applied_at %}<p><strong>Applied Date:</strong> {{ application.applied_at }}</p>{% endif %}
+                            </div>
+
+                            <div class="timeline-track" aria-label="Application status timeline">
+                                {% for stage in application.timeline %}
+                                    <span class="timeline-step {% if stage.state == 'complete' %}complete{% elif stage.state == 'current' %}current{% elif stage.state == 'rejected' %}rejected{% else %}pending{% endif %}">
+                                        {% if stage.state == 'complete' %}✓{% elif stage.state == 'rejected' %}✕{% else %}○{% endif %}
+                                        {{ stage.label }}
+                                    </span>
+                                {% endfor %}
+                            </div>
+
+                            <div class="application-card-actions">
+                                {% if application.voice_message and application.voice_message.startswith('uploads/') %}<a href="{{ url_for('application_audio', filename=application.voice_message|replace('uploads/', '')) }}" class="btn-small">Play Voice Application</a>{% endif %}
+                                <a href="{{ url_for('application_details', application_id=application.id) }}" class="btn-small">View Details</a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state-card">
+                    <p>You haven't applied for any jobs yet.</p>
+                    <a href="/jobs" class="btn">Browse Jobs</a>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>

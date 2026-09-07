@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="learning">
+            <h2>Skill Learning Hub</h2>
+            <p>Build practical skills for your next opportunity.</p>
+
+            <div class="course-grid">
+                {% for course in courses %}
+                    <article class="course">
+                        <h3>{{ course.title }}</h3>
+                        <p>{{ course.description }}</p>
+                        <div class="progress-summary"><strong>{{ course.progress_percentage }}%</strong><span>{{ course.completed_count }}/{{ course.total_count }} lessons</span></div>
+                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ course.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"><span style="width: {{ course.progress_percentage }}%"></span></div>
+                        {% if course.progress_percentage == 100 %}
+                            <p class="completion-badge">Completed</p>
+                        {% endif %}
+                        <a href="{{ url_for('learning_course', course_id=course.id) }}" class="btn">{{ 'Review Course' if course.progress_percentage == 100 else ('Continue Learning' if course.completed_count else 'Start Course') }}</a>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>

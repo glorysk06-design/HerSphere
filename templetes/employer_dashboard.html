@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Dashboard - HerSphere</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header><nav><div class="logo">HerSphere</div><ul><li><a href="/employer/dashboard">Dashboard</a></li><li><a href="/employer/jobs">My Jobs</a></li><li><a href="/employer/post-job">Post a Job</a></li><li><a href="/employer/logout">Logout</a></li></ul></nav></header>
+    <main><section class="dashboard">
+        <h2>Welcome, {{ employer.company_name }}</h2>
+        <div class="section"><p><strong>Email:</strong> {{ employer.email }}</p><p><strong>Phone:</strong> {{ employer.phone or 'Not provided' }}</p><p><strong>Description:</strong> {{ employer.company_description or 'Not provided' }}</p><p><strong>Verification:</strong> <span class="verification-badge verification-{{ (employer.verification_status or 'Pending')|lower }}">{{ employer.verification_status or 'Pending' }}</span></p></div>
+        <div class="feature-grid">
+            <div class="feature"><h3>{{ stats.jobs_count }}</h3><p>My Jobs</p></div>
+            <div class="feature"><h3>{{ stats.applicants_count }}</h3><p>Applicants</p></div>
+            <div class="feature"><h3>{{ stats.pending_count }}</h3><p>Pending</p></div>
+            <div class="feature"><h3>{{ stats.shortlisted_count }}</h3><p>Shortlisted</p></div>
+        </div>
+        <div class="section"><a href="/employer/post-job" class="btn">Post a Job</a> <a href="/employer/jobs" class="btn">Manage My Jobs</a></div>
+    </section></main>
+</body>
+</html>

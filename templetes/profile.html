@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/my-applications">My Applications</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="profile">
+            <h2>Your Profile</h2>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="profile-info">
+                <h3>Personal Information</h3>
+                <p><strong>Name:</strong> {{ user.name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>Skills:</strong> {{ user.skills }}</p>
+            </div>
+
+            <div class="profile-actions">
+                <h3>Update Profile</h3>
+                <form method="post" action="/update_profile">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" value="{{ user.name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills">Skills (comma-separated)</label>
+                        <input type="text" id="skills" name="skills" value="{{ user.skills }}" required>
+                    </div>
+                    <button type="submit" class="btn">Update Profile</button>
+                </form>
+            </div>
+
+            <div class="applications">
+                <h3>Your Job Applications</h3>
+                {% if applications %}
+                    <ul class="application-list">
+                        {% for app in applications %}
+                            <li>
+                                <h4>{{ app.title }}</h4>
+                                <p>{{ app.company }}</p>
+                                <p><strong>Applied:</strong> {{ app.applied_at or 'Date unavailable' }}</p>
+                                <p><strong>Status:</strong> {{ app.status or 'Pending' }}</p>
+                                {% if app.voice_message %}
+                                    <p><strong>Voice Message:</strong> {{ app.voice_message }}</p>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>You haven't applied for any jobs yet.</p>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>

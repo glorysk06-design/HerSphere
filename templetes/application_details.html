@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/my-applications">My Applications</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="application-details-page">
+            <div class="page-header-row">
+                <h2>Application Details</h2>
+                <a href="{{ url_for('my_applications') }}" class="btn btn-secondary">Back to My Applications</a>
+            </div>
+
+            <div class="details-grid">
+                <div class="detail-card">
+                    <h3>Job Information</h3>
+                    <p><strong>Job Title:</strong> {{ application.title }}</p>
+                    <p><strong>Company:</strong> {{ application.company }}</p>
+                    {% if application.location %}<p><strong>Location:</strong> {{ application.location }}</p>{% endif %}
+                    {% if application.job_type %}<p><strong>Job Type:</strong> {{ application.job_type }}</p>{% endif %}
+                    {% if application.salary %}<p><strong>Salary:</strong> {{ application.salary }}</p>{% endif %}
+                    {% if application.description %}<p><strong>Job Description:</strong> {{ application.description }}</p>{% endif %}
+                    {% if application.skill_required %}<p><strong>Required Skills:</strong> {{ application.skill_required }}</p>{% endif %}
+                </div>
+
+                <div class="detail-card">
+                    <h3>Application Information</h3>
+                    {% if application.applied_at %}<p><strong>Applied Date:</strong> {{ application.applied_at }}</p>{% endif %}
+                    <p><strong>Current Status:</strong> <span class="status-badge {{ status_badge_class }}">{{ status_label }}</span></p>
+                    {% if application.voice_message and application.voice_message.startswith('uploads/') %}<p><strong>Voice Application:</strong> <audio controls src="{{ url_for('application_audio', filename=application.voice_message|replace('uploads/', '')) }}"></audio></p>{% elif application.voice_message %}<p><strong>Application Note:</strong> {{ application.voice_message }}</p>{% endif %}
+
+                    <div class="timeline-track details-timeline" aria-label="Status summary">
+                        {% for stage in timeline %}
+                            <span class="timeline-step {% if stage.state == 'complete' %}complete{% elif stage.state == 'current' %}current{% elif stage.state == 'rejected' %}rejected{% else %}pending{% endif %}">
+                                {% if stage.state == 'complete' %}✓{% elif stage.state == 'rejected' %}✕{% else %}○{% endif %}
+                                {{ stage.label }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>

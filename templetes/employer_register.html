@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Registration - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header><nav><div class="logo">HerSphere</div><ul><li><a href="/">Home</a></li><li><a href="/employer/login">Employer Login</a></li></ul></nav></header>
+    <main><section class="auth-form">
+        <h2>Create Employer Account</h2>
+        {% with messages = get_flashed_messages() %}{% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+        <form method="post">
+            <div class="form-group"><label for="company_name">Company Name</label><input id="company_name" name="company_name" required></div>
+            <div class="form-group"><label for="email">Company Email</label><input type="email" id="email" name="email" required></div>
+            <div class="form-group"><label for="phone">Phone Number</label><input type="tel" id="phone" name="phone"></div>
+            <div class="form-group"><label for="password">Password</label><input type="password" id="password" name="password" minlength="6" required></div>
+            <div class="form-group"><label for="company_description">Company Description</label><textarea id="company_description" name="company_description" rows="4"></textarea></div>
+            <button type="submit" class="btn">Register Company</button>
+        </form>
+    </section></main>
+</body>
+</html>

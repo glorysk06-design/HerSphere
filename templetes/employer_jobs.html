@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Jobs - HerSphere</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header><nav><div class="logo">HerSphere</div><ul><li><a href="/employer/dashboard">Dashboard</a></li><li><a href="/employer/post-job">Post a Job</a></li><li><a href="/employer/logout">Logout</a></li></ul></nav></header>
+    <main><section class="jobs"><h2>My Jobs</h2>
+        {% with messages = get_flashed_messages() %}{% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+        {% for job in jobs %}<div class="job-card"><h3>{{ job.title }}</h3><span class="risk-badge risk-{{ job.risk_level|lower|replace(' ', '-') }}">{{ job.risk_level }}</span>{% if job.risk_level != 'Low Risk' %}<p class="risk-warning"><strong>Flagged indicators:</strong> {{ job.risk_indicators|join('; ') }}.</p>{% endif %}<p><strong>Required Skill:</strong> {{ job.skill_required }}</p><p>{{ job.description or 'No description provided.' }}</p><p><strong>Location:</strong> {{ job.location or 'Not specified' }} | <strong>Type:</strong> {{ job.job_type or 'Not specified' }} | <strong>Applicants:</strong> {{ job.applicant_count }}</p><a href="/employer/job/{{ job.id }}/applicants" class="btn-small">View Applicants</a> <a href="/employer/job/{{ job.id }}/edit" class="btn-small">Edit</a><form method="post" action="/employer/job/{{ job.id }}/delete" style="display:inline"><button type="submit" class="btn-small">Delete</button></form></div>{% else %}<p>You have not posted any jobs yet.</p>{% endfor %}
+    </section></main>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Tasks - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="freelance">
+            <h2>Freelance Micro Tasks</h2>
+            <p>Earn money by completing small freelance tasks. Build your portfolio and income.</p>
+
+            <div class="task-list">
+                {% for task in tasks %}
+                    <article class="task">
+                        <div><h3>{{ task.title }}</h3><p>{{ task.description }}</p><strong>{{ task.payment }}</strong></div>
+                        {% if task.acceptance %}<span class="completion-badge">Accepted</span>{% else %}<form method="post" action="{{ url_for('accept_freelance_task', task_id=task.id) }}"><button type="submit" class="btn">Accept Task</button></form>{% endif %}
+                    </article>
+                {% endfor %}
+            </div>
+
+            <section class="accepted-tasks"><h3>My Accepted Tasks</h3>
+                {% if accepted_tasks %}<div class="accepted-task-list">{% for task in accepted_tasks %}<div class="accepted-task"><strong>{{ task.title }}</strong><span>{{ task.payment }}</span><span>{{ task.status }}</span><small>{{ task.accepted_at }}</small></div>{% endfor %}</div>{% else %}<p class="empty-state">You have not accepted any tasks yet.</p>{% endif %}
+            </section>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>

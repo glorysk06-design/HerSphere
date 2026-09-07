@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employer Login - HerSphere</title><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header><nav><div class="logo">HerSphere</div><ul><li><a href="/">Home</a></li><li><a href="/employer/register">Register</a></li></ul></nav></header>
+    <main><section class="auth-form">
+        <h2>Employer Login</h2>
+        {% with messages = get_flashed_messages() %}{% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}{% endwith %}
+        <form method="post">
+            <div class="form-group"><label for="email">Company Email</label><input type="email" id="email" name="email" required></div>
+            <div class="form-group"><label for="password">Password</label><input type="password" id="password" name="password" required></div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <p>New company? <a href="/employer/register">Create an employer account</a></p>
+    </section></main>
+</body>
+</html>

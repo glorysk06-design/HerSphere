@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - HerSphere</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">HerSphere</div>
+            <ul>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/jobs">Jobs</a></li>
+                <li><a href="/learning">Learning</a></li>
+                <li><a href="/community">Community</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/freelance">Freelance</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="community">
+            <h2>Women Community</h2>
+            <p>Connect, share, and support each other in a safe space.</p>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+            {% endwith %}
+
+            <div class="post-form">
+                <h3>Share Your Thoughts</h3>
+                <form method="post" action="/post">
+                    <textarea name="message" placeholder="What's on your mind?" required></textarea>
+                    <button type="submit" class="btn">Post</button>
+                </form>
+            </div>
+
+            <div class="posts">
+                <h3>Recent Posts</h3>
+                {% for post in posts %}
+                    <div class="post">
+                        <h4>{{ post.name }}</h4>
+                        <p>{{ post.message }}</p>
+                        <small>{{ post.timestamp }}</small>
+                        <div class="post-actions">
+                            <form method="post" action="{{ url_for('toggle_post_like', post_id=post.id) }}" class="inline-form">
+                                <button type="submit" class="btn-small">{{ 'Unlike' if post.liked_by_user else 'Like' }} ({{ post.like_count }})</button>
+                            </form>
+                            <form method="post" action="{{ url_for('report_post', post_id=post.id) }}" class="inline-form">
+                                <input type="text" name="reason" placeholder="Report reason (optional)" maxlength="500" aria-label="Report reason">
+                                <button type="submit" class="btn-small btn-secondary">Report</button>
+                            </form>
+                        </div>
+                        <div class="comments">
+                            <h5>Comments ({{ post.comments|length }})</h5>
+                            {% for comment in post.comments %}
+                                <div class="comment">
+                                    <p><strong>{{ comment.name }}</strong> {{ comment.comment_text }}</p>
+                                    <small>{{ comment.created_at }}</small>
+                                    {% if comment.user_id == session.user_id %}<form method="post" action="{{ url_for('delete_comment', comment_id=comment.id) }}"><button type="submit" class="text-button">Delete</button></form>{% endif %}
+                                </div>
+                            {% else %}<p class="empty-state">No comments yet.</p>{% endfor %}
+                            <form method="post" action="{{ url_for('add_comment', post_id=post.id) }}" class="comment-form">
+                                <textarea name="comment_text" maxlength="1000" placeholder="Add a supportive comment" required></textarea>
+                                <button type="submit" class="btn-small">Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+    </footer>
+</body>
+</html>
