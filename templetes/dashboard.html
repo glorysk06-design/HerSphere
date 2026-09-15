@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - HerSphere</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css', v='2') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <header>
@@ -26,7 +26,11 @@
     <main>
         <section class="dashboard">
             <h2>Welcome, {{ user.name }}!</h2>
-            <p>Your skills: {{ user.skills }}</p>
+            {% if user.skills %}
+                <p>Your skills: {{ user.skills }}</p>
+            {% else %}
+                <p>No skills added yet. <a href="{{ url_for('profile') }}">Update your profile</a> to receive personalised job recommendations.</p>
+            {% endif %}
 
             <div class="dashboard-sections">
                 <div class="section">
@@ -55,7 +59,7 @@
                                     {% else %}
                                         <p class="all-skills-matched">All required skills matched</p>
                                     {% endif %}
-                                    <a href="{{ url_for('jobs') }}" class="btn btn-small">View Job</a>
+                                    <a href="{{ url_for('jobs', keyword=job.title) }}" class="btn btn-small">View Job</a>
                                 </article>
                             {% endfor %}
                         </div>
@@ -77,7 +81,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2024 HerSphere. Empowering women everywhere.</p>
+        <p>&copy; 2026 HerSphere. Empowering women everywhere.</p>
     </footer>
 </body>
 </html>

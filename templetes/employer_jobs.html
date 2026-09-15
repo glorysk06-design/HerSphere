@@ -10,5 +10,8 @@
         {% with messages = get_flashed_messages() %}{% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}{% endwith %}
         {% for job in jobs %}<div class="job-card"><h3>{{ job.title }}</h3><span class="risk-badge risk-{{ job.risk_level|lower|replace(' ', '-') }}">{{ job.risk_level }}</span>{% if job.risk_level != 'Low Risk' %}<p class="risk-warning"><strong>Flagged indicators:</strong> {{ job.risk_indicators|join('; ') }}.</p>{% endif %}<p><strong>Required Skill:</strong> {{ job.skill_required }}</p><p>{{ job.description or 'No description provided.' }}</p><p><strong>Location:</strong> {{ job.location or 'Not specified' }} | <strong>Type:</strong> {{ job.job_type or 'Not specified' }} | <strong>Applicants:</strong> {{ job.applicant_count }}</p><a href="/employer/job/{{ job.id }}/applicants" class="btn-small">View Applicants</a> <a href="/employer/job/{{ job.id }}/edit" class="btn-small">Edit</a><form method="post" action="/employer/job/{{ job.id }}/delete" style="display:inline"><button type="submit" class="btn-small">Delete</button></form></div>{% else %}<p>You have not posted any jobs yet.</p>{% endfor %}
     </section></main>
+    <footer>
+        <p>&copy; 2026 HerSphere. Empowering women everywhere.</p>
+    </footer>
 </body>
 </html>

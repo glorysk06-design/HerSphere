@@ -956,14 +956,19 @@ def profile():
 def update_profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
-    name = request.form['name']
-    skills = request.form['skills']
-    
+
+    name = request.form.get('name', '').strip()
+    skills = request.form.get('skills', '').strip()
+
+    if not name:
+        flash('Name cannot be empty.')
+        return redirect(url_for('profile'))
+
     db = get_db()
     db.execute('UPDATE users SET name = ?, skills = ? WHERE id = ?',
               (name, skills, session['user_id']))
     db.commit()
+    session['user_name'] = name
     flash('Profile updated successfully!')
     return redirect(url_for('profile'))
 

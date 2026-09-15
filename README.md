@@ -38,6 +38,33 @@ Flask routes handle authentication, user and employer workflows, admin verificat
 
 Recommendations and scam detection are deterministic, explainable rule-based services implemented in `app.py`; no machine-learning model or external API is required.
 
+## Environment Variables
+
+The following environment variables configure optional and security-sensitive behaviour. **Do not put real secrets into version control.**
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `HERSPHERE_SECRET_KEY` | Flask session signing key. Set a long random string in production so sessions survive restarts. | Random token generated each startup |
+| `HERSPHERE_ADMIN_EMAIL` | Email address of the admin account created on first startup. | `admin@hersphere.local` |
+| `HERSPHERE_ADMIN_PASSWORD` | Password for the admin account. **Must be set** to provision the admin login. | *(no admin account created if unset)* |
+| `HERSPHERE_DEBUG` | Set to `1` to enable Flask debug mode. **Never enable in production.** | Off (`0`) |
+
+Example (Linux/macOS):
+
+```bash
+export HERSPHERE_SECRET_KEY="replace-with-a-long-random-string"
+export HERSPHERE_ADMIN_EMAIL="admin@example.com"
+export HERSPHERE_ADMIN_PASSWORD="replace-with-a-strong-password"
+```
+
+Example (Windows PowerShell):
+
+```powershell
+$env:HERSPHERE_SECRET_KEY = "replace-with-a-long-random-string"
+$env:HERSPHERE_ADMIN_EMAIL = "admin@example.com"
+$env:HERSPHERE_ADMIN_PASSWORD = "replace-with-a-strong-password"
+```
+
 ## Installation
 
 1. Install Python 3.x

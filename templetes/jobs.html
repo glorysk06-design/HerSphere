@@ -103,16 +103,16 @@
 
                         <form method="post" action="/apply/{{ job.id }}" enctype="multipart/form-data"{% if job.risk_level != 'Low Risk' %} onsubmit="return confirm('This job has been flagged as {{ job.risk_level }}. Review the warning before applying. Continue?')"{% endif %}>
                             <input type="hidden" name="voice_message" id="voice{{ job.id }}">
-                            <button type="button" onclick="showVoiceRecorder({{ job.id }})" class="btn-small">Speak Application</button>
+                            <button type="button" class="btn-small js-show-recorder" data-job-id="{{ job.id }}">Speak Application</button>
                             <button type="submit" class="btn">Apply</button>
                             <div id="recorder{{ job.id }}" class="voice-recorder" hidden>
                                 <p>Record a short voice application</p>
-                                <button type="button" id="start{{ job.id }}" onclick="startRecording({{ job.id }})" class="btn-small">Start Recording</button>
-                                <button type="button" id="stop{{ job.id }}" onclick="stopRecording({{ job.id }})" class="btn-small btn-secondary" disabled>Stop Recording</button>
+                                <button type="button" id="start{{ job.id }}" class="btn-small js-start-recorder" data-job-id="{{ job.id }}">Start Recording</button>
+                                <button type="button" id="stop{{ job.id }}" class="btn-small btn-secondary js-stop-recorder" data-job-id="{{ job.id }}" disabled>Stop Recording</button>
                                 <audio id="audio{{ job.id }}" controls hidden></audio>
                                 <input type="file" id="file{{ job.id }}" name="voice_audio" accept="audio/webm,audio/ogg,audio/mp4,audio/wav,audio/mpeg" hidden>
                                 <button type="submit" id="submitVoice{{ job.id }}" class="btn-small" disabled>Submit Voice Application</button>
-                                <button type="button" onclick="cancelRecording({{ job.id }})" class="btn-small btn-secondary">Cancel</button>
+                                <button type="button" class="btn-small btn-secondary js-cancel-recorder" data-job-id="{{ job.id }}">Cancel</button>
                             </div>
                         </form>
                         {% if job.id in saved_job_ids %}
@@ -186,6 +186,16 @@
             document.getElementById('start' + id).disabled = false;
             document.getElementById('stop' + id).disabled = true;
         }
+
+        document.addEventListener('click', function (event) {
+            var btn = event.target.closest('[data-job-id]');
+            if (!btn) return;
+            var id = btn.dataset.jobId;
+            if (btn.classList.contains('js-show-recorder')) { showVoiceRecorder(id); }
+            else if (btn.classList.contains('js-start-recorder')) { startRecording(id); }
+            else if (btn.classList.contains('js-stop-recorder')) { stopRecording(id); }
+            else if (btn.classList.contains('js-cancel-recorder')) { cancelRecording(id); }
+        });
     </script>
 </body>
 </html>

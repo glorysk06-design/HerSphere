@@ -17,7 +17,7 @@
         <section class="learning-course-page">
             <div class="page-header-row"><div><h2>{{ course.title }}</h2><p>{{ course.description }}</p></div><a href="{{ url_for('learning') }}" class="btn btn-secondary">All Courses</a></div>
             {% with messages = get_flashed_messages() %}{% if messages %}<div class="flash-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}{% endwith %}
-            <div class="course-progress-panel"><strong>{{ course.progress_percentage }}% complete</strong><span>{{ course.completed_count }} of {{ course.total_count }} lessons</span><div class="progress-bar" role="progressbar" aria-valuenow="{{ course.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"><span style="width: {{ course.progress_percentage }}%"></span></div></div>
+            <div class="course-progress-panel"><strong>{{ course.progress_percentage }}% complete</strong><span>{{ course.completed_count }} of {{ course.total_count }} lessons</span><div class="progress-bar" role="progressbar" aria-valuenow="{{ course.progress_percentage }}" aria-valuemin="0" aria-valuemax="100"><span style="--bar-w: {{ course.progress_percentage }}%; width: var(--bar-w)"></span></div></div>
             <div class="lesson-list">
                 {% for lesson in course.lessons %}
                     <article class="lesson-card {% if lesson.completed %}lesson-complete{% endif %}" id="lesson-{{ lesson.id }}">
@@ -31,6 +31,6 @@
             </div>
         </section>
     </main>
-    <footer><p>&copy; 2024 HerSphere. Empowering women everywhere.</p></footer>
+    <footer><p>&copy; 2026 HerSphere. Empowering women everywhere.</p></footer>
 </body>
 </html>

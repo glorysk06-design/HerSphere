@@ -14,10 +14,25 @@
             <div class="form-group"><label for="description">Description</label><textarea id="description" name="description" rows="5">{{ job.description if job else '' }}</textarea></div>
             <div class="form-group"><label for="skill_required">Required Skill</label><input id="skill_required" name="skill_required" value="{{ job.skill_required if job else '' }}" required></div>
             <div class="form-group"><label for="location">Location</label><input id="location" name="location" value="{{ job.location if job else '' }}"></div>
-            <div class="form-group"><label for="job_type">Job Type</label><input id="job_type" name="job_type" placeholder="Full-time, part-time, contract" value="{{ job.job_type if job else '' }}"></div>
+            <div class="form-group"><label for="job_type">Job Type</label>
+                <select id="job_type" name="job_type">
+                    <option value="">Select Job Type</option>
+                    {% set known_types = ['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship'] %}
+                    {% set current_type = job.job_type if job else '' %}
+                    {% for option in known_types %}
+                        <option value="{{ option }}" {% if current_type == option %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                    {% if current_type and current_type not in known_types %}
+                        <option value="{{ current_type }}" selected>{{ current_type }}</option>
+                    {% endif %}
+                </select>
+            </div>
             <div class="form-group"><label for="salary">Salary</label><input id="salary" name="salary" value="{{ job.salary if job else '' }}"></div>
             <button type="submit" class="btn">{{ 'Save Changes' if job else 'Post Job' }}</button>
         </form>
     </section></main>
+    <footer>
+        <p>&copy; 2026 HerSphere. Empowering women everywhere.</p>
+    </footer>
 </body>
 </html>
