@@ -1,6 +1,10 @@
 # HerSphere
 
-A safe employment, communication, and learning platform designed specifically for women.
+### Women-Focused Employment & Empowerment Platform
+
+HerSphere is a full-stack web platform designed to support women's employment, skill development, workplace safety, and community engagement.
+
+It combines job discovery, explainable skill-based recommendations, employer verification, rule-based scam detection, application tracking, learning resources, freelance opportunities, voice applications, and community features in one platform.
 
 ## Problem
 
@@ -38,6 +42,27 @@ Flask routes handle authentication, user and employer workflows, admin verificat
 
 Recommendations and scam detection are deterministic, explainable rule-based services implemented in `app.py`; no machine-learning model or external API is required.
 
+## Project Structure
+
+```text
+HerSphere/
+├── app.py
+├── requirements.txt
+├── verify_app_tracking.py
+├── README.md
+├── .gitignore
+├── static/
+│   └── style.css
+└── templetes/
+    ├── index.html
+    ├── login.html
+    ├── register.html
+    ├── dashboard.html
+    └── ...
+```
+
+> Note: The project intentionally uses the existing `templetes/` folder name.
+
 ## Environment Variables
 
 The following environment variables configure optional and security-sensitive behaviour. **Do not put real secrets into version control.**
@@ -49,7 +74,7 @@ The following environment variables configure optional and security-sensitive be
 | `HERSPHERE_ADMIN_PASSWORD` | Password for the admin account. **Must be set** to provision the admin login. | *(no admin account created if unset)* |
 | `HERSPHERE_DEBUG` | Set to `1` to enable Flask debug mode. **Never enable in production.** | Off (`0`) |
 
-Example (Linux/macOS):
+### Example — Linux/macOS
 
 ```bash
 export HERSPHERE_SECRET_KEY="replace-with-a-long-random-string"
@@ -57,7 +82,7 @@ export HERSPHERE_ADMIN_EMAIL="admin@example.com"
 export HERSPHERE_ADMIN_PASSWORD="replace-with-a-strong-password"
 ```
 
-Example (Windows PowerShell):
+### Example — Windows PowerShell
 
 ```powershell
 $env:HERSPHERE_SECRET_KEY = "replace-with-a-long-random-string"
@@ -67,31 +92,37 @@ $env:HERSPHERE_ADMIN_PASSWORD = "replace-with-a-strong-password"
 
 ## Installation
 
-1. Install Python 3.x
+1. Install Python 3.x.
 2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+
+```bash
+pip install -r requirements.txt
+```
 
 ## Running the Application
 
 1. Run the Flask app:
-   ```
-   python app.py
-   ```
 
-2. Open your browser and go to http://127.0.0.1:5000
+```bash
+python app.py
+```
+
+2. Open your browser and go to:
+
+`http://127.0.0.1:5000`
 
 ## Usage
 
-1. Register a new account
-2. Login to access the dashboard
-3. Browse jobs, learn skills, join community, or take freelance tasks
-4. Apply for jobs using text or voice
+1. Register a new account.
+2. Login to access the dashboard.
+3. Browse jobs, learn skills, join the community, or take freelance tasks.
+4. Apply for jobs using text or voice.
 
 ## Database
 
-The application uses the existing `hersphere.db` SQLite database. On startup, required tables are created if missing and existing records are preserved. Set `HERSPHERE_SECRET_KEY` for a stable production session key and `HERSPHERE_ADMIN_PASSWORD` when provisioning an admin account.
+The application uses the existing `hersphere.db` SQLite database. On startup, required tables are created if missing and existing records are preserved.
+
+Set `HERSPHERE_SECRET_KEY` for a stable production session key and `HERSPHERE_ADMIN_PASSWORD` when provisioning an admin account.
 
 ## Future Scope
 
@@ -99,4 +130,4 @@ Possible future improvements include richer course authoring, stronger operation
 
 ## Voice Application
 
-Click "Speak Application" to record a voice application using the browser microphone. The recording is stored as an audio file and submitted with the job application. Authorized applicants and employers can play the submitted recording.
+Click **"Speak Application"** to record a voice application using the browser microphone. The recording is stored as an audio file and submitted with the job application. Authorized applicants and employers can play the submitted recording.
